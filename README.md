@@ -42,7 +42,7 @@ I tried converting the Image to various color spaces for detecting the lane line
     
 ![png](writeUp/output_12_0.png)
 
-Out of the all the channels visualized above, S and L channel from HLS, Y and Cr channel from YCrCb colorspace look promising and are able to identify the lane lines easily, which are too bright to identify in the original image itself.
+Out of the all the channels visualized above, S and L channel from HLS,  channel from HLS colorspace look promising and are able to identify the lane lines easily, which are too bright to identify in the original image itself.
 I chose these color channels because after combining they were easily able to detect the lane lines and were almost free from noise.
 
 
