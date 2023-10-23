@@ -38,7 +38,7 @@ I kept finding corners and appended them to an array imgpoints and obj point to 
 
 #### Experimenting on various color spaces
     
-I tried converting the Image to various color spaces for detecting the lane lines better. I tried RGB, HSV, HLS, Lab and YCrCb color spaces.
+I tried converting the Image to various color spaces for detecting the lane lines better. I tried RGB, HSV, HLS, Lab color spaces.
     
 ![png](writeUp/output_12_0.png)
 
