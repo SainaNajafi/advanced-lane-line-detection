@@ -509,3 +509,78 @@ def print_road_map(image, left_line, right_line):
     road_map = cv2.resize(road_map, (95, 95))
     road_map = cv2.cvtColor(road_map, cv2.COLOR_BGRA2BGR)
     return road_map
+
+
+def road_info(left_line, right_line):
+    """print road information onto result image"""
+    curvature = (left_line.radius_of_curvature + right_line.radius_of_curvature) / 2
+
+    direction = (
+        (left_line.endx - left_line.startx) + (right_line.endx - right_line.startx)
+    ) / 2
+
+    if curvature > 2000 and abs(direction) < 100:
+        road_inf = "No Curve"
+        curvature = -1
+    elif curvature <= 2000 and direction < -50:
+        road_inf = "Left Curve"
+    elif curvature <= 2000 and direction > 50:
+        road_inf = "Right Curve"
+    else:
+        if left_line.road_inf != None:
+            road_inf = left_line.road_inf
+            curvature = left_line.curvature
+        else:
+            road_inf = "None"
+            curvature = curvature
+
+    center_lane = (right_line.startx + left_line.startx) / 2
+    lane_width = right_line.startx - left_line.startx
+
+    center_car = 720 / 2
+    if center_lane > center_car:
+        deviation = (
+            "Left "
+            + str(round(abs(center_lane - center_car) / (lane_width / 2) * 100, 3))
+            + "%"
+        )
+    elif center_lane < center_car:
+        deviation = (
+            "Right "
+            + str(round(abs(center_lane - center_car) / (lane_width / 2) * 100, 3))
+            + "%"
+        )
+    else:
+        deviation = "Center"
+    left_line.road_inf = road_inf
+    left_line.curvature = curvature
+    left_line.deviation = deviation
+
+    return road_inf, curvature, deviation
+
+
+def print_road_status(img, left_line, right_line):
+    """print road status (curve direction, radius of curvature, deviation)"""
+    road_inf, curvature, deviation = road_info(left_line, right_line)
+    cv2.putText(
+        img, "Road Status", (22, 30), cv2.FONT_HERSHEY_COMPLEX, 0.7, (80, 80, 80), 2
+    )
+
+    lane_inf = "Lane Info : " + road_inf
+    if curvature == -1:
+        lane_curve = "Curvature : Straight line"
+    else:
+        lane_curve = "Curvature : {0:0.3f}m".format(curvature)
+    deviate = "Deviation : " + deviation
+
+    cv2.putText(
+        img, lane_inf, (10, 63), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (100, 100, 100), 1
+    )
+    cv2.putText(
+        img, lane_curve, (10, 83), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (100, 100, 100), 1
+    )
+    cv2.putText(
+        img, deviate, (10, 103), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (100, 100, 100), 1
+    )
+
+    return img

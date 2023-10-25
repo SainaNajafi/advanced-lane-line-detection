@@ -4,11 +4,20 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from calibration import calib, undistort
 from threshold import gradient_combine, hls_combine, comb_result
-from finding_lines import Line, warp_image, find_LR_lines, draw_lane, print_road_map
+from finding_lines import (
+    Line,
+    warp_image,
+    find_LR_lines,
+    draw_lane,
+    print_road_status,
+    print_road_map,
+)
+from skimage import exposure
 
-
-input_type = "video"
-input_name = "project_video.mp4"
+input_type = "video"  #'video' # 'image'
+input_name = (
+    "project_video.mp4"  #'test_images/straight_lines1.jpg' # 'challenge_video.mp4'
+)
 
 left_line = Line()
 right_line = Line()
@@ -103,15 +112,18 @@ if __name__ == "__main__":
             lane_color[220 : rows - 12, 0:cols] = color_result
 
             # Combine the result with the original image
-            result = cv2.addWeighted(undist_img, 0.8, lane_color, 0.7, 0)
+            result = cv2.addWeighted(undist_img, 1, lane_color, 0.3, 0)
             # cv2.imshow('result', result.astype(np.uint8))
 
-            info2 = np.zeros_like(result)
-            info2[5:110, cols - 111 : cols - 6] = (234, 234, 255)
-            info2 = cv2.addWeighted(result, 1, info2, 0.3, 0)
+            info, info2 = np.zeros_like(result), np.zeros_like(result)
+            info[5:110, 5:190] = (255, 255, 255)
+            info2[5:110, cols - 111 : cols - 6] = (255, 255, 255)
+            info = cv2.addWeighted(result, 1, info, 0.2, 0)
+            info2 = cv2.addWeighted(info, 1, info2, 0.2, 0)
             road_map = print_road_map(w_color_result, left_line, right_line)
             info2[10:105, cols - 106 : cols - 11] = road_map
-            cv2.imshow("final result", info2)
+            info2 = print_road_status(info2, left_line, right_line)
+            cv2.imshow("road info", info2)
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
 
